@@ -1,74 +1,78 @@
+-- Copyright Swinburne (c) 2014
+-- Included in assignment files.
 --------------------------------------------------------------------------------
--- Testbench for Traffic intersection
+
+--------------------------------------------------------------------------------
+-- testbench for traffic intersection
 --
--- It will be necessary to change the port definitions of the instantiation of
--- the Traffic module to match the actual ports used.
+-- it will be necessary to change the port definitions of the instantiation of
+-- the traffic module to match the actual ports used.
 -- 
 --------------------------------------------------------------------------------
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.std_logic_unsigned.all;
-USE ieee.numeric_std.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
+use ieee.numeric_std.all;
 
-ENTITY TrafficTestbench IS
-END TrafficTestbench;
+entity traffictestbench is
+end traffictestbench;
 
-ARCHITECTURE behavior OF TrafficTestbench IS 
+architecture behavior of traffictestbench is 
 
-	-- Component Declaration for the Unit Under Test (UUT)
-	COMPONENT Traffic
-	PORT(
-		Reset     : IN std_logic;
-		Clock     : IN std_logic;
-		CarEW     : IN std_logic;
-		CarNS     : IN std_logic;
-		PedEW     : IN std_logic;
-		PedNS     : IN std_logic;          
-		debugLED  : OUT std_logic;
-		LightsEW  : OUT std_logic_vector(1 downto 0);
-		LightsNS  : OUT std_logic_vector(1 downto 0)
-		);
-	END COMPONENT;
+   -- component declaration for the unit under test (uut)
+   component traffic
+   port(
+      reset     : in std_logic;
+      clock     : in std_logic;
+      carew     : in std_logic;
+      carns     : in std_logic;
+      pedew     : in std_logic;
+      pedns     : in std_logic;          
+      debugled  : out std_logic;
+      lightsew  : out std_logic_vector(1 downto 0);
+      lightsns  : out std_logic_vector(1 downto 0)
+      );
+   end component;
 
-	-- Inputs
-	SIGNAL Reset :  std_logic := '0';
-	SIGNAL Clock :  std_logic := '0';
-	SIGNAL CarEW :  std_logic := '0';
-	SIGNAL CarNS :  std_logic := '0';
-	SIGNAL PedEW :  std_logic := '0';
-	SIGNAL PedNS :  std_logic := '0';
+   -- inputs
+   signal reset :  std_logic := '0';
+   signal clock :  std_logic := '0';
+   signal carew :  std_logic := '0';
+   signal carns :  std_logic := '0';
+   signal pedew :  std_logic := '0';
+   signal pedns :  std_logic := '0';
 
-	-- Outputs
-	SIGNAL debugLED :  std_logic;
-	SIGNAL LightsEW :  std_logic_vector(1 downto 0);
-	SIGNAL LightsNS :  std_logic_vector(1 downto 0);
+   -- outputs
+   signal debugled :  std_logic;
+   signal lightsew :  std_logic_vector(1 downto 0);
+   signal lightsns :  std_logic_vector(1 downto 0);
    
-   -- Internal
+   -- internal
    signal complete : boolean := false;
-   signal currentTest : string(1 to 10);
+   signal currenttest : string(1 to 10);
 
-   -- Encoding for lights
-   constant RED   : std_logic_vector(1 downto 0) := "00";
-   constant AMBER : std_logic_vector(1 downto 0) := "01";
-   constant GREEN : std_logic_vector(1 downto 0) := "10";
-   constant WALK  : std_logic_vector(1 downto 0) := "11";
+   -- encoding for lights
+   constant red   : std_logic_vector(1 downto 0) := "00";
+   constant amber : std_logic_vector(1 downto 0) := "01";
+   constant green : std_logic_vector(1 downto 0) := "10";
+   constant walk  : std_logic_vector(1 downto 0) := "11";
 
-BEGIN
+begin
 
-	-- Instantiate the Unit Under Test (UUT)
-	uut: Traffic PORT MAP(
-		Reset    => Reset,
-		Clock    => Clock,
-		debugLED => debugLED,
-		CarEW    => CarEW,
-		CarNS    => CarNS,
-		PedEW    => PedEW,
-		PedNS    => PedNS,
-		LightsEW => LightsEW,
-		LightsNS => LightsNS
-	);
+   -- instantiate the unit under test (uut)
+   uut: traffic port map(
+      reset    => reset,
+      clock    => clock,
+      debugled => debugled,
+      carew    => carew,
+      carns    => carns,
+      pedew    => pedew,
+      pedns    => pedns,
+      lightsew => lightsew,
+      lightsns => lightsns
+   );
 
-   clkProcess:
+   clkprocess:
    process
    begin
       while not complete loop
@@ -77,117 +81,117 @@ BEGIN
       end loop;
       
       wait;
-   end process clkProcess;
+   end process clkprocess;
    
    
-	tb : PROCESS
-	BEGIN
+   tb : process
+   begin
 
-      CarEW <= '0'; CarNS <= '0'; PedEW <= '0'; PedNS <= '0';
+      carew <= '0'; carns <= '0'; pedew <= '0'; pedns <= '0';
 
-		-- Stimulus here
-		--==========================================
-		
-      -- Reset circuit
-      currentTest <= "Reset     ";
+      -- stimulus here
+      --==========================================
+      
+      -- reset circuit
+      currenttest <= "reset     ";
       reset <= '1';  wait until rising_edge(clock);
       reset <= '0';  wait until rising_edge(clock);
       
-      -- Simulation assumes lights start green NS after reset - change if needed
+      -- simulation assumes lights start green ns after reset - change if needed
       
-      -- Lights currently green NS
-		-- EW Car arrives & waits for the lights to change 
-		-- Lights should change directly to green EW
-      currentTest <= "EW Car    ";
-      CarEW <= '1'; CarNS <= '0'; PedEW <= '0'; PedNS <= '0'; -- EW car arrives
-      wait until LightsEW = GREEN;
-      CarEW <= '0'; CarNS <= '0'; PedEW <= '0'; PedNS <= '0'; -- EW car leaves
+      -- lights currently green ns
+      -- ew car arrives & waits for the lights to change 
+      -- lights should change directly to green ew
+      currenttest <= "ew car    ";
+      carew <= '1'; carns <= '0'; pedew <= '0'; pedns <= '0'; -- ew car arrives
+      wait until lightsew = green;
+      carew <= '0'; carns <= '0'; pedew <= '0'; pedns <= '0'; -- ew car leaves
       wait for 1 us; -- not a realistic delay but speeds up simulation
             
-      -- Lights currently green EW
-		-- NS Car arrives & waits for the lights to change 
-		-- Lights should change directly to green NS
-      currentTest <= "NS Car    ";
-      CarEW <= '0'; CarNS <= '1'; PedEW <= '0'; PedNS <= '0'; -- NS car arrives
-      wait until LightsNS = GREEN;
-      CarEW <= '0'; CarNS <= '0'; PedEW <= '0'; PedNS <= '0'; -- NS car leaves
+      -- lights currently green ew
+      -- ns car arrives & waits for the lights to change 
+      -- lights should change directly to green ns
+      currenttest <= "ns car    ";
+      carew <= '0'; carns <= '1'; pedew <= '0'; pedns <= '0'; -- ns car arrives
+      wait until lightsns = green;
+      carew <= '0'; carns <= '0'; pedew <= '0'; pedns <= '0'; -- ns car leaves
       wait for 1 us; -- not a realistic delay but speeds up simulation
             
-      -- Lights currently green NS
-		-- EW Pedestrian briefly presses button 
-		-- Lights should change directly to green+walk EW then green EW
-      currentTest <= "EW Ped    ";
+      -- lights currently green ns
+      -- ew pedestrian briefly presses button 
+      -- lights should change directly to green+walk ew then green ew
+      currenttest <= "ew ped    ";
       wait until falling_edge(clock);
-      CarEW <= '0'; CarNS <= '0'; PedEW <= '1'; PedNS <= '0'; -- EW ped presses button
+      carew <= '0'; carns <= '0'; pedew <= '1'; pedns <= '0'; -- ew ped presses button
       wait until falling_edge(clock);
-      CarEW <= '0'; CarNS <= '0'; PedEW <= '0'; PedNS <= '0'; -- ped releases button
-      wait until LightsEW = WALK;
-      wait until LightsEW = GREEN;
+      carew <= '0'; carns <= '0'; pedew <= '0'; pedns <= '0'; -- ped releases button
+      wait until lightsew = walk;
+      wait until lightsew = green;
       wait for 1 us; -- not a realistic delay but speeds up simulation
             
-      -- Lights currently green EW
-		-- EW Pedestrian briefly presses button 
-		-- Lights should change directly to green+walk EW then back to green EW
-      currentTest <= "EW Ped #2 ";
+      -- lights currently green ew
+      -- ew pedestrian briefly presses button 
+      -- lights should change directly to green+walk ew then back to green ew
+      currenttest <= "ew ped #2 ";
       wait until falling_edge(clock);
-      CarEW <= '0'; CarNS <= '0'; PedEW <= '1'; PedNS <= '0'; -- EW ped presses button
+      carew <= '0'; carns <= '0'; pedew <= '1'; pedns <= '0'; -- ew ped presses button
       wait until falling_edge(clock);
-      CarEW <= '0'; CarNS <= '0'; PedEW <= '0'; PedNS <= '0'; -- ped releases button
-      wait until LightsEW = WALK;
-      wait until LightsEW = GREEN;
+      carew <= '0'; carns <= '0'; pedew <= '0'; pedns <= '0'; -- ped releases button
+      wait until lightsew = walk;
+      wait until lightsew = green;
       wait for 1 us; -- not a realistic delay but speeds up simulation
       
-      -- Lights currently green EW
-      -- NS Pedestrian briefly presses button 
-		-- Lights should change directly to green+walk NS then to green NS
-      currentTest <= "NS Ped    ";
+      -- lights currently green ew
+      -- ns pedestrian briefly presses button 
+      -- lights should change directly to green+walk ns then to green ns
+      currenttest <= "ns ped    ";
       wait until falling_edge(clock);
-      CarEW <= '0'; CarNS <= '0'; PedEW <= '0'; PedNS <= '1'; -- NS ped presses button
+      carew <= '0'; carns <= '0'; pedew <= '0'; pedns <= '1'; -- ns ped presses button
       wait until falling_edge(clock);
-      CarEW <= '0'; CarNS <= '0'; PedEW <= '0'; PedNS <= '0'; -- ped releases button
-      wait until LightsNS = WALK;
-      wait until LightsNS = GREEN;
+      carew <= '0'; carns <= '0'; pedew <= '0'; pedns <= '0'; -- ped releases button
+      wait until lightsns = walk;
+      wait until lightsns = green;
       wait for 1 us; -- not a realistic delay but speeds up simulation
             
-      -- Lights currently green NS
-		-- NS Pedestrian briefly presses button 
-		-- Lights should change directly to green+walk NS then back to green NS
-      currentTest <= "NS Ped #2 ";
+      -- lights currently green ns
+      -- ns pedestrian briefly presses button 
+      -- lights should change directly to green+walk ns then back to green ns
+      currenttest <= "ns ped #2 ";
       wait until falling_edge(clock);
-      CarEW <= '0'; CarNS <= '0'; PedEW <= '0'; PedNS <= '1'; -- NS ped presses button
+      carew <= '0'; carns <= '0'; pedew <= '0'; pedns <= '1'; -- ns ped presses button
       wait until falling_edge(clock);
-      CarEW <= '0'; CarNS <= '0'; PedEW <= '0'; PedNS <= '0'; -- ped releases button
-      wait until LightsNS = WALK;
-      wait until LightsNS = GREEN;
+      carew <= '0'; carns <= '0'; pedew <= '0'; pedns <= '0'; -- ped releases button
+      wait until lightsns = walk;
+      wait until lightsns = green;
       wait for 1 us; -- not a realistic delay but speeds up simulation
             
-      -- Lights currently green NS
-		-- EW & NS Cars arrive & wait for the lights to change  
-		-- Lights should cycle green EW <=> green NS
-      currentTest <= "Cycling   ";
-      CarEW <= '1'; CarNS <= '1'; PedEW <= '0'; PedNS <= '0'; -- EW & NS cars arrives
+      -- lights currently green ns
+      -- ew & ns cars arrive & wait for the lights to change  
+      -- lights should cycle green ew <=> green ns
+      currenttest <= "cycling   ";
+      carew <= '1'; carns <= '1'; pedew <= '0'; pedns <= '0'; -- ew & ns cars arrives
       for count in 1 to 5 loop
-         wait until LightsEW = GREEN;
-         wait until LightsNS = GREEN;
+         wait until lightsew = green;
+         wait until lightsns = green;
       end loop;
-      CarEW <= '0'; CarNS <= '0'; PedEW <= '0'; PedNS <= '0'; -- EW car leaves
+      carew <= '0'; carns <= '0'; pedew <= '0'; pedns <= '0'; -- ew car leaves
       wait for 1 us; -- not a realistic delay but speeds up simulation
             
-      -- Lights currently green NS
-		-- EW & NS Peds arrive & wait for the lights to change 
-		-- Lights should cycle walk+green EW => green EW => walk+green NS => green NS
-      currentTest <= "Cycling+W ";
+      -- lights currently green ns
+      -- ew & ns peds arrive & wait for the lights to change 
+      -- lights should cycle walk+green ew => green ew => walk+green ns => green ns
+      currenttest <= "cycling+w ";
       for count in 1 to 5 loop
-         CarEW <= '0'; CarNS <= '0'; PedEW <= '1'; PedNS <= '1'; -- EW & NS peds arrives
+         carew <= '0'; carns <= '0'; pedew <= '1'; pedns <= '1'; -- ew & ns peds arrives
          wait until falling_edge(clock);
-         wait until LightsEW = GREEN;
-         wait until LightsNS = GREEN;
+         wait until lightsew = green;
+         wait until lightsns = green;
       end loop;
-      CarEW <= '0'; CarNS <= '0'; PedEW <= '0'; PedNS <= '0'; -- EW car leaves
+      carew <= '0'; carns <= '0'; pedew <= '0'; pedns <= '0'; -- ew car leaves
       wait for 1 us; -- not a realistic delay but speeds up simulation
       
       complete <= true; -- end simulation
-		wait; -- will wait forever
-	END PROCESS;
+      wait; -- will wait forever
+   end process;
 
-END;
+end;
