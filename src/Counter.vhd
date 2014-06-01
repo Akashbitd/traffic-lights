@@ -1,5 +1,7 @@
 ----------------------------------------------------------------------------------
--- 
+-- Counter.vhd
+--
+-- An event timer based on a counter with thresholds.
 ----------------------------------------------------------------------------------
 
 library ieee;
@@ -34,12 +36,15 @@ begin
       CntPed <= '0';
       CntAmb <= '0';
       CntCar <= '0';
+      -- Pedestrian time threshold
       if (Count > 450) then
          CntPed <= '1';
       end if;
+      -- Amber time threshold
       if (Count > 150) then
          CntAmb <= '1';
       end if;
+      -- Traffic time threshold
       if (Count > 600) then
          CntCar <= '1';
       end if;
