@@ -4,4 +4,4 @@ A simple traffic light controller utilising a hybrid Moore/Mealy state machine. 
 
 ![State Transition Diagram](/doc/std.png)
 
-View the (final synthesis overview)[/doc/overview.png] or read (the report)[/doc/report.pdf].
+View the [final synthesis overview](/doc/overview.png) or read [the report](/doc/report.pdf).
